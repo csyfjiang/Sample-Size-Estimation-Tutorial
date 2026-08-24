@@ -1,0 +1,47 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it and the underlying method papers."
+title: "sampsizeval: sample-size and precision calculators for binary-outcome clinical prediction models"
+authors:
+  - family-names: Jiang
+    given-names: Yufeng
+version: 0.1.0
+license: MIT
+repository-code: "https://github.com/csyfjiang/Sample-Size-Estimation-Tutorial"
+keywords:
+  - sample size
+  - clinical prediction model
+  - external validation
+  - calibration
+  - AUC
+references:
+  - type: article
+    authors: [{family-names: Riley, given-names: R D}]
+    title: "Calculating the sample size required for developing a clinical prediction model"
+    journal: BMJ
+    year: 2020
+    volume: "368"
+    notes: "m441"
+  - type: article
+    authors: [{family-names: Snell, given-names: K I E}]
+    title: "External validation of clinical prediction models: simulation-based sample size calculations were more reliable than rules-of-thumb"
+    journal: "Journal of Clinical Epidemiology"
+    year: 2021
+    volume: "135"
+    start: 79
+    end: 89
+  - type: article
+    authors: [{family-names: Riley, given-names: R D}]
+    title: "Evaluation of clinical prediction models (part 3): calculating the sample size required for an external validation study"
+    journal: BMJ
+    year: 2023
+    volume: "383"
+    notes: "e074821"
+  - type: article
+    authors: [{family-names: Jung, given-names: S H}]
+    title: "Sample size calculation for comparing two ROC curves"
+    journal: "Pharmaceutical Statistics"
+    year: 2024
+    volume: "23"
+    issue: "4"
+    start: 557
+    end: 569

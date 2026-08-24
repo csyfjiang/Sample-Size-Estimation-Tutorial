@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sample Size Estimation for Prediction Models</title>
+<meta name="description" content="Interactive sample-size / precision calculators for clinical prediction models with a binary outcome. Runs entirely in your browser.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div>
+    <h1>Sample Size Estimation &mdash; Binary-Outcome Prediction Models</h1>
+    <div class="sub">Development &rarr; External validation &rarr; Model comparison. Runs 100% in your browser (Pyodide). No data leaves your machine.</div>
+  </div>
+  <div class="spacer"></div>
+  <span class="status" id="status"><span class="dot"></span><span id="status-text">Loading Python engine&hellip;</span></span>
+  <a class="ghlink" href="https://github.com/csyfjiang/Sample-Size-Estimation-Tutorial" target="_blank" rel="noopener">GitHub &nearr;</a>
+</header>
+
+<main>
+  <div class="tabs" id="tabs">
+    <div class="tab active" data-tab="dev">Development<small>Riley 2020 &middot; is training set big enough?</small></div>
+    <div class="tab" data-tab="vc">Validation &mdash; closed form<small>Riley 2023 &middot; achieved CI widths</small></div>
+    <div class="tab" data-tab="vs">Validation &mdash; simulation<small>Snell 2021 &middot; allows miscalibration</small></div>
+    <div class="tab" data-tab="cmp">Compare two AUCs<small>Jung 2024 &middot; DeLong-equivalent</small></div>
+  </div>
+
+  <!-- DEVELOPMENT -->
+  <section class="panel active" id="panel-dev">
+    <div class="card">
+      <h2>Development-stage sample size</h2>
+      <p class="desc">Given your development cohort size N, what precision / shrinkage do the four Riley (2020) criteria achieve? B3 (shrinkage) is usually the binding constraint.</p>
+      <div class="field"><label>N &mdash; development cohort size</label><input type="number" id="dev-n" value="717"></div>
+      <div class="row2">
+        <div class="field"><label>&phi; &mdash; event proportion <span class="hint">(pCR)</span></label><input type="number" step="0.01" id="dev-phi" value="0.30"></div>
+        <div class="field"><label>P &mdash; candidate parameters</label><input type="number" id="dev-P" value="20"></div>
+      </div>
+      <div class="field"><label>R&sup2;<sub>cs</sub> <span class="hint">(blank = 0.15&times;max, conservative)</span></label><input type="number" step="0.001" id="dev-r2" placeholder="auto"></div>
+      <button class="run" data-run="dev" disabled>Calculate</button>
+      <div class="drop" data-drop="dev-outcome">Drop a CSV with a <b>true_outcome</b> column to auto-fill &phi;<div class="filemsg"></div></div>
+      <div class="ref">Riley RD et al. <i>BMJ</i> 2020;368:m441. Criteria B1&ndash;B4.</div>
+    </div>
+    <div class="card"><div id="out-dev" class="results-empty">Set parameters and click <b>Calculate</b>.</div></div>
+  </section>
+
+  <!-- VALIDATION CLOSED -->
+  <section class="panel" id="panel-vc">
+    <div class="card">
+      <h2>External validation precision &mdash; closed form</h2>
+      <p class="desc">Given validation cohort size N, the achieved 95% CI widths for O/E, calibration slope, c-statistic and net benefit. Same method as <code class="k">pmvalsampsize</code>.</p>
+      <div class="field"><label>N &mdash; validation cohort size</label><input type="number" id="vc-n" value="334"></div>
+      <div class="row2">
+        <div class="field"><label>&phi; &mdash; event proportion</label><input type="number" step="0.01" id="vc-phi" value="0.30"></div>
+        <div class="field"><label>c-statistic <span class="hint">(AUC)</span></label><input type="number" step="0.01" id="vc-c" value="0.75"></div>
+      </div>
+      <button class="run" data-run="vc" disabled>Calculate</button>
+      <div class="drop" data-drop="vc-pred">Drop a predictions CSV (<b>predicted_prob</b>, <b>true_outcome</b>) to auto-fill &phi; &amp; c<div class="filemsg"></div></div>
+      <div class="ref">Riley RD et al. (part 3) <i>BMJ</i> 2023;383:e074821. Targets: c&le;0.10, slope&le;0.30, O/E&le;0.22.</div>
+    </div>
+    <div class="card"><div id="out-vc" class="results-empty">Set parameters and click <b>Calculate</b>.</div></div>
+  </section>
+
+  <!-- VALIDATION SIM -->
+  <section class="panel" id="panel-vs">
+    <div class="card">
+      <h2>External validation precision &mdash; simulation</h2>
+      <p class="desc">Assumes LP ~ Normal(&mu;, &sigma;&sup2;). Lets you inject miscalibration through the true slope S (S=1 well calibrated; S&lt;1 predictions too extreme).</p>
+      <div class="field"><label>N &mdash; validation cohort size</label><input type="number" id="vs-n" value="334"></div>
+      <div class="row2">
+        <div class="field"><label>&mu; &mdash; mean of LP</label><input type="number" step="0.05" id="vs-mu" value="-0.85"></div>
+        <div class="field"><label>&sigma; &mdash; SD of LP</label><input type="number" step="0.05" id="vs-sigma" value="1.0"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>&gamma; &mdash; true CITL</label><input type="number" step="0.05" id="vs-gamma" value="0.0"></div>
+        <div class="field"><label>S &mdash; true slope</label><input type="number" step="0.05" id="vs-S" value="1.0"></div>
+      </div>
+      <div class="field"><label>Simulations <span class="hint">(more = smoother, slower)</span></label><input type="number" id="vs-nsims" value="400"></div>
+      <button class="run" data-run="vs" disabled>Simulate</button>
+      <div class="drop" data-drop="vs-pred">Drop a predictions CSV to auto-fill &mu;, &sigma; &amp; &gamma;<div class="filemsg"></div></div>
+      <div class="ref">Snell KIE et al. <i>J Clin Epidemiol</i> 2021;135:79&ndash;89.</div>
+    </div>
+    <div class="card"><div id="out-vs" class="results-empty">Set parameters and click <b>Simulate</b>.</div></div>
+  </section>
+
+  <!-- COMPARE -->
+  <section class="panel" id="panel-cmp">
+    <div class="card">
+      <h2>Compare two correlated AUCs</h2>
+      <p class="desc">Sample size to detect an AUC difference between two models on the same patients (paired), asymptotically equivalent to DeLong's test.</p>
+      <div class="row2">
+        <div class="field"><label>&theta;&#8321; &mdash; model A AUC</label><input type="number" step="0.01" id="cmp-t1" value="0.75"></div>
+        <div class="field"><label>&theta;&#8322; &mdash; model B AUC</label><input type="number" step="0.01" id="cmp-t2" value="0.82"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>&rho; &mdash; score correlation</label><input type="number" step="0.05" id="cmp-rho" value="0.5"></div>
+        <div class="field"><label>&gamma; &mdash; event proportion</label><input type="number" step="0.01" id="cmp-gamma" value="0.30"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>N <span class="hint">(your cohort, for power)</span></label><input type="number" id="cmp-n" value="334"></div>
+        <div class="field"><label>Power / &alpha;</label>
+          <div class="row2"><input type="number" step="0.05" id="cmp-power" value="0.8"><input type="number" step="0.01" id="cmp-alpha" value="0.05"></div>
+        </div>
+      </div>
+      <button class="run" data-run="cmp" disabled>Calculate</button>
+      <div class="drop" data-drop="cmp-two">Drop a CSV (<b>model_A_score</b>, <b>model_B_score</b>, <b>true_outcome</b>) to auto-fill &theta;&#8321;, &theta;&#8322;, &rho;, &gamma;<div class="filemsg"></div></div>
+      <div class="ref">Jung SH. <i>Pharm Stat</i> 2024;23(4):557&ndash;569.</div>
+    </div>
+    <div class="card"><div id="out-cmp" class="results-empty">Set parameters and click <b>Calculate</b>.</div></div>
+  </section>
+</main>
+
+<footer>
+  Implements Riley 2020 &middot; Snell 2021 &middot; Riley 2023 &middot; Jung 2024. &nbsp;
+  Educational tool &mdash; confirm manuscript numbers with <code class="k">pmsampsize</code> / <code class="k">pmvalsampsize</code>.
+</footer>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sampsizeval"
+version = "0.1.0"
+description = "Sample-size and precision calculators for clinical prediction models with a binary outcome (development, external validation, model comparison)."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [{ name = "Yufeng Jiang" }]
+keywords = ["sample size", "clinical prediction model", "external validation",
+            "calibration", "AUC", "TRIPOD", "pmsampsize", "pmvalsampsize"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+]
+dependencies = ["numpy>=1.20", "scipy>=1.7"]
+
+[project.optional-dependencies]
+csv = ["pandas>=1.3"]
+test = ["pytest>=7.0"]
+
+[project.urls]
+Homepage = "https://github.com/csyfjiang/Sample-Size-Estimation-Tutorial"
+Demo = "https://csyfjiang.github.io/Sample-Size-Estimation-Tutorial/"
+
+[project.scripts]
+sampsizeval = "sampsizeval.cli:main"
+
+[tool.setuptools]
+packages = ["sampsizeval"]
