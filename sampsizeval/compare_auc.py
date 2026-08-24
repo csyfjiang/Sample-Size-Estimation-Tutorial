@@ -10,7 +10,17 @@ Asymptotically equivalent to a DeLong test.
 """
 
 import numpy as np
-from scipy import stats, integrate, optimize
+from scipy import stats, optimize
+
+# Gauss-Hermite nodes/weights, reused for every quadrature call. The integrands
+# are expectations of Phi(.) under (bivariate) normal densities, so Gauss-Hermite
+# is exact-to-machine-precision with a modest node count and is ~100x faster than
+# scipy.integrate.dblquad -- which matters because min_detectable_difference()
+# root-finds over repeated sigma_12 evaluations.
+_GH_N = 64
+_GH_T, _GH_W = np.polynomial.hermite.hermgauss(_GH_N)
+_SQRT2 = np.sqrt(2.0)
+_SQRTPI = np.sqrt(np.pi)
 
 
 def delta_to_theta(delta):
@@ -22,25 +32,28 @@ def theta_to_delta(theta):
 
 
 def sigma_k_sq(delta_k):
+    """Var{Phi(X_k)} with X_k ~ N(delta_k, 1), via 1D Gauss-Hermite.
+        E[Phi(u+delta)^2],  u ~ N(0,1),  u = sqrt(2) t
+    """
     theta_k = delta_to_theta(delta_k)
-
-    def integrand(x):
-        return stats.norm.pdf(x - delta_k) * (stats.norm.cdf(x) ** 2)
-
-    val, _ = integrate.quad(integrand, -12, 12)
+    x = _SQRT2 * _GH_T + delta_k
+    val = np.sum(_GH_W * stats.norm.cdf(x) ** 2) / _SQRTPI
     return val - theta_k ** 2
 
 
 def sigma_12(delta1, delta2, rho):
+    """Cov{Phi(X1), Phi(X2)} with (X1,X2) ~ N((delta1,delta2), [[1,rho],[rho,1]]),
+    via 2D Gauss-Hermite over the Cholesky factor L=[[1,0],[rho,sqrt(1-rho^2)]].
+    """
     theta1 = delta_to_theta(delta1)
     theta2 = delta_to_theta(delta2)
-    mvn = stats.multivariate_normal(mean=[delta1, delta2], cov=[[1, rho], [rho, 1]])
-
-    def integrand(x2, x1):
-        return stats.norm.cdf(x1) * stats.norm.cdf(x2) * mvn.pdf([x1, x2])
-
-    val, _ = integrate.dblquad(integrand, -8, 8, lambda x1: -8, lambda x1: 8,
-                               epsabs=1e-8, epsrel=1e-8)
+    z1 = _SQRT2 * _GH_T                      # standard-normal grid (1D)
+    z2 = _SQRT2 * _GH_T
+    Z1, Z2 = np.meshgrid(z1, z2, indexing="ij")
+    W = np.outer(_GH_W, _GH_W) / np.pi
+    x1 = delta1 + Z1
+    x2 = delta2 + rho * Z1 + np.sqrt(max(1.0 - rho ** 2, 0.0)) * Z2
+    val = np.sum(W * stats.norm.cdf(x1) * stats.norm.cdf(x2))
     return val - theta1 * theta2
 
 
