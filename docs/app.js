@@ -31,7 +31,7 @@ async function boot() {
     setStatus("Loading calculators…");
     pyodide.FS.mkdirTree("/home/pyodide/sampsizeval");
     for (const path of PY_FILES) {
-      const src = await (await fetch(path + "?v=1")).text();
+      const src = await (await fetch(path + "?v=3")).text();
       const dest = "/home/pyodide/" + path.replace(/^py\//, "");
       pyodide.FS.writeFile(dest, src);
     }

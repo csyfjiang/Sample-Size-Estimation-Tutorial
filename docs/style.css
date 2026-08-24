@@ -6,6 +6,9 @@
   --line: #e4e7ec;
   --brand: #2f5fe0;
   --brand-ink: #ffffff;
+  --dev: #2f5fe0;   /* stage colours (match the slides) */
+  --val: #157347;
+  --cmp: #b25a00;
   --ok-bg: #e7f6ec; --ok-ink: #157347;
   --warn-bg: #fdf3e3; --warn-ink: #b25a00;
   --bad-bg: #fdecec; --bad-ink: #c0392b;
@@ -16,6 +19,7 @@
   :root {
     --bg: #0f1420; --panel: #171d2b; --ink: #e6e9f0; --muted: #97a1b5;
     --line: #2a3243; --brand: #5b82f0; --code-bg: #0d1220;
+    --dev: #5b82f0; --val: #35b06f; --cmp: #e0902f;
     --ok-bg: #12301f; --ok-ink: #5fd48b;
     --warn-bg: #34260f; --warn-ink: #e0a54a;
     --bad-bg: #331717; --bad-ink: #ef7d7d;
@@ -108,3 +112,42 @@ table.res td.num { font-variant-numeric: tabular-nums; font-weight: 600; }
 @keyframes spin { to { transform: rotate(360deg); } }
 footer { text-align: center; color: var(--muted); font-size: 12px; padding: 26px; }
 code.k { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+
+/* ---- stage colour coding (Development / Validation / Comparison) ---- */
+.s-dev { color: var(--dev); }
+.s-val { color: var(--val); }
+.s-cmp { color: var(--cmp); }
+
+.tabno {
+  display: inline-block; font-size: 10.5px; font-weight: 800; letter-spacing: .02em;
+  padding: 1px 6px; border-radius: 5px; margin-right: 6px; vertical-align: 1px;
+  background: var(--code-bg); color: var(--muted);
+}
+.tab[data-stage="dev"] .tabno { color: var(--dev); }
+.tab[data-stage="val"] .tabno { color: var(--val); }
+.tab[data-stage="cmp"] .tabno { color: var(--cmp); }
+
+/* active tab takes its stage colour instead of the single brand blue */
+.tab[data-stage="dev"].active { background: var(--dev); border-color: var(--dev); color: #fff; }
+.tab[data-stage="val"].active { background: var(--val); border-color: var(--val); color: #fff; }
+.tab[data-stage="cmp"].active { background: var(--cmp); border-color: var(--cmp); color: #fff; }
+.tab.active .tabno { background: rgba(255,255,255,.25); color: #fff; }
+
+/* the input card carries a coloured top accent per stage */
+.panel[data-stage="dev"] .card:first-child { border-top: 3px solid var(--dev); }
+.panel[data-stage="val"] .card:first-child { border-top: 3px solid var(--val); }
+.panel[data-stage="cmp"] .card:first-child { border-top: 3px solid var(--cmp); }
+
+/* the "App N" badge inside each heading */
+.appno {
+  display: inline-block; font-size: 11px; font-weight: 800; color: #fff;
+  padding: 2px 8px; border-radius: 6px; margin-right: 8px; vertical-align: 2px;
+}
+.panel[data-stage="dev"] .appno { background: var(--dev); }
+.panel[data-stage="val"] .appno { background: var(--val); }
+.panel[data-stage="cmp"] .appno { background: var(--cmp); }
+
+/* the Calculate button follows the active stage colour */
+.panel[data-stage="dev"] button.run { background: var(--dev); }
+.panel[data-stage="val"] button.run { background: var(--val); }
+.panel[data-stage="cmp"] button.run { background: var(--cmp); }

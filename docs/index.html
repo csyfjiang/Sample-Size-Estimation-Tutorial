@@ -11,7 +11,7 @@
 <header>
   <div>
     <h1>Sample Size Estimation &mdash; Binary-Outcome Prediction Models</h1>
-    <div class="sub">Development &rarr; External validation &rarr; Model comparison. Runs 100% in your browser (Pyodide). No data leaves your machine.</div>
+    <div class="sub"><b class="s-dev">1 Development</b> &rarr; <b class="s-val">2&ndash;3 External validation</b> &rarr; <b class="s-cmp">4 Model comparison</b>. Runs 100% in your browser (Pyodide); no data ever leaves your machine.</div>
   </div>
   <div class="spacer"></div>
   <span class="status" id="status"><span class="dot"></span><span id="status-text">Loading Python engine&hellip;</span></span>
@@ -20,35 +20,35 @@
 
 <main>
   <div class="tabs" id="tabs">
-    <div class="tab active" data-tab="dev">Development<small>Riley 2020 &middot; is training set big enough?</small></div>
-    <div class="tab" data-tab="vc">Validation &mdash; closed form<small>Riley 2023 &middot; achieved CI widths</small></div>
-    <div class="tab" data-tab="vs">Validation &mdash; simulation<small>Snell 2021 &middot; allows miscalibration</small></div>
-    <div class="tab" data-tab="cmp">Compare two AUCs<small>Jung 2024 &middot; DeLong-equivalent</small></div>
+    <div class="tab active" data-tab="dev" data-stage="dev"><span class="tabno">App 1</span> Development<small>Riley 2020 &middot; is the training set big enough?</small></div>
+    <div class="tab" data-tab="vc" data-stage="val"><span class="tabno">App 2</span> Validation &mdash; closed form<small>Riley 2023 &middot; achieved CI widths</small></div>
+    <div class="tab" data-tab="vs" data-stage="val"><span class="tabno">App 3</span> Validation &mdash; simulation<small>Snell 2021 &middot; allows miscalibration</small></div>
+    <div class="tab" data-tab="cmp" data-stage="cmp"><span class="tabno">App 4</span> Compare two AUCs<small>Jung 2024 &middot; DeLong-equivalent</small></div>
   </div>
 
-  <!-- DEVELOPMENT -->
-  <section class="panel active" id="panel-dev">
+  <!-- APP 1: DEVELOPMENT -->
+  <section class="panel active" id="panel-dev" data-stage="dev">
     <div class="card">
-      <h2>Development-stage sample size</h2>
-      <p class="desc">Given your development cohort size N, what precision / shrinkage do the four Riley (2020) criteria achieve? B3 (shrinkage) is usually the binding constraint.</p>
-      <div class="field"><label>N &mdash; development cohort size</label><input type="number" id="dev-n" value="717"></div>
+      <h2><span class="appno">App 1</span> Is the development cohort large enough?</h2>
+      <p class="desc">This is the first question, asked before any validation: was the cohort you used to build the model (here the <b>Discovery cohort, N&nbsp;=&nbsp;648</b>) large enough to fit it reliably, so that the model is not badly overfitted? Enter your cohort size and the app reports what each of Riley's four criteria (B1&ndash;B4) actually achieves at that size. In practice the shrinkage criterion (B3) is almost always the one that decides whether the sample is sufficient. The example below plans for <b>20 candidate predictor parameters</b>.</p>
+      <div class="field"><label>N &mdash; development cohort size</label><input type="number" id="dev-n" value="648"></div>
       <div class="row2">
-        <div class="field"><label>&phi; &mdash; event proportion <span class="hint">(pCR)</span></label><input type="number" step="0.01" id="dev-phi" value="0.30"></div>
-        <div class="field"><label>P &mdash; candidate parameters</label><input type="number" id="dev-P" value="20"></div>
+        <div class="field"><label>&phi; &mdash; event proportion <span class="hint">(here: pCR rate)</span></label><input type="number" step="0.01" id="dev-phi" value="0.31"></div>
+        <div class="field"><label>P &mdash; candidate predictor parameters</label><input type="number" id="dev-P" value="20"></div>
       </div>
-      <div class="field"><label>R&sup2;<sub>cs</sub> <span class="hint">(blank = 0.15&times;max, conservative)</span></label><input type="number" step="0.001" id="dev-r2" placeholder="auto"></div>
+      <div class="field"><label>R&sup2;<sub>cs</sub> &mdash; anticipated Cox&ndash;Snell R&sup2; <span class="hint">(leave blank for the conservative default, 0.15&times;max)</span></label><input type="number" step="0.001" id="dev-r2" placeholder="auto"></div>
       <button class="run" data-run="dev" disabled>Calculate</button>
-      <div class="drop" data-drop="dev-outcome">Drop a CSV with a <b>true_outcome</b> column to auto-fill &phi;<div class="filemsg"></div></div>
+      <div class="drop" data-drop="dev-outcome">Drop a CSV with a <b>true_outcome</b> column to fill &phi; from real data<div class="filemsg"></div></div>
       <div class="ref">Riley RD et al. <i>BMJ</i> 2020;368:m441. Criteria B1&ndash;B4.</div>
     </div>
-    <div class="card"><div id="out-dev" class="results-empty">Set parameters and click <b>Calculate</b>.</div></div>
+    <div class="card"><div id="out-dev" class="results-empty">Set the parameters and click <b>Calculate</b>.</div></div>
   </section>
 
-  <!-- VALIDATION CLOSED -->
-  <section class="panel" id="panel-vc">
+  <!-- APP 2: VALIDATION CLOSED -->
+  <section class="panel" id="panel-vc" data-stage="val">
     <div class="card">
-      <h2>External validation precision &mdash; closed form</h2>
-      <p class="desc">Given validation cohort size N, the achieved 95% CI widths for O/E, calibration slope, c-statistic and net benefit. Same method as <code class="k">pmvalsampsize</code>.</p>
+      <h2><span class="appno">App 2</span> Is the validation cohort precise enough? (formula)</h2>
+      <p class="desc">Once the model has been built, the next question is whether a new cohort is large enough to measure its performance <b>precisely</b>. For your cohort size, the app reports the width of the 95% confidence interval you would obtain for four measures: the observed/expected ratio, the calibration slope, the c-statistic, and net benefit. A narrower interval means a more precise estimate. This tab uses the fast closed-form formulas, the same approach as the <code class="k">pmvalsampsize</code> software.</p>
       <div class="field"><label>N &mdash; validation cohort size</label><input type="number" id="vc-n" value="334"></div>
       <div class="row2">
         <div class="field"><label>&phi; &mdash; event proportion</label><input type="number" step="0.01" id="vc-phi" value="0.30"></div>
@@ -61,11 +61,11 @@
     <div class="card"><div id="out-vc" class="results-empty">Set parameters and click <b>Calculate</b>.</div></div>
   </section>
 
-  <!-- VALIDATION SIM -->
-  <section class="panel" id="panel-vs">
+  <!-- APP 3: VALIDATION SIM -->
+  <section class="panel" id="panel-vs" data-stage="val">
     <div class="card">
-      <h2>External validation precision &mdash; simulation</h2>
-      <p class="desc">Assumes LP ~ Normal(&mu;, &sigma;&sup2;). Lets you inject miscalibration through the true slope S (S=1 well calibrated; S&lt;1 predictions too extreme).</p>
+      <h2><span class="appno">App 3</span> Is the validation cohort precise enough? (simulation)</h2>
+      <p class="desc">This answers the same precision question as App&nbsp;2, but by simulating many datasets instead of using a formula, which lets you relax its assumptions. You describe the model's linear predictor as a Normal(&mu;,&nbsp;&sigma;&sup2;) distribution, and you can deliberately build in miscalibration through the true slope S: <b>S&nbsp;=&nbsp;1</b> means the model is perfectly calibrated, while <b>S&nbsp;below&nbsp;1</b> means its predicted risks are too extreme. Running it at S&nbsp;=&nbsp;1 and again at S&nbsp;=&nbsp;0.9 gives a realistic precision range.</p>
       <div class="field"><label>N &mdash; validation cohort size</label><input type="number" id="vs-n" value="334"></div>
       <div class="row2">
         <div class="field"><label>&mu; &mdash; mean of LP</label><input type="number" step="0.05" id="vs-mu" value="-0.85"></div>
@@ -83,11 +83,11 @@
     <div class="card"><div id="out-vs" class="results-empty">Set parameters and click <b>Simulate</b>.</div></div>
   </section>
 
-  <!-- COMPARE -->
-  <section class="panel" id="panel-cmp">
+  <!-- APP 4: COMPARE -->
+  <section class="panel" id="panel-cmp" data-stage="cmp">
     <div class="card">
-      <h2>Compare two correlated AUCs</h2>
-      <p class="desc">Sample size to detect an AUC difference between two models on the same patients (paired), asymptotically equivalent to DeLong's test.</p>
+      <h2><span class="appno">App 4</span> Can you detect that one model beats another?</h2>
+      <p class="desc">The final question is whether a cohort is large enough to show that one model's AUC is <b>genuinely higher</b> than another's, when both are evaluated on the same patients. This is the sample-size version of DeLong's test. The correlation &rho; between the two models' predicted scores is the key extra input: the more alike the two models are, the fewer patients you need to tell them apart.</p>
       <div class="row2">
         <div class="field"><label>&theta;&#8321; &mdash; model A AUC</label><input type="number" step="0.01" id="cmp-t1" value="0.75"></div>
         <div class="field"><label>&theta;&#8322; &mdash; model B AUC</label><input type="number" step="0.01" id="cmp-t2" value="0.82"></div>
@@ -112,7 +112,7 @@
 
 <footer>
   Implements Riley 2020 &middot; Snell 2021 &middot; Riley 2023 &middot; Jung 2024. &nbsp;
-  Educational tool &mdash; confirm manuscript numbers with <code class="k">pmsampsize</code> / <code class="k">pmvalsampsize</code>.
+  Educational tool. Confirm manuscript numbers with <code class="k">pmsampsize</code> / <code class="k">pmvalsampsize</code>.
 </footer>
 
 <script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
