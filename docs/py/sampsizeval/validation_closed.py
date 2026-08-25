@@ -122,9 +122,9 @@ def reverse_lookup_binary(n, phi, c_stat, beta_params=None,
     return {
         "n": n, "phi": phi, "c_stat": c_stat,
         "oe_ci_width": w_oe, "oe_lower": lo, "oe_upper": hi,
-        "oe_ok": w_oe <= 0.22,
+        "oe_ok": w_oe <= 0.20,
         "calibration_slope_ci_width": w_slope, "calibration_slope_mean": mean_slope,
-        "calibration_slope_ok": w_slope <= 0.3,
+        "calibration_slope_ok": w_slope <= 0.20,
         "c_stat_ci_width": w_c, "c_stat_ok": w_c <= 0.1,
         "net_benefit": nb,
     }

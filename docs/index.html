@@ -18,6 +18,14 @@
   <a class="ghlink" href="https://github.com/csyfjiang/Sample-Size-Estimation-Tutorial" target="_blank" rel="noopener">GitHub &nearr;</a>
 </header>
 
+<div class="setup">
+  <div class="setup-check"><b>Step 0 &middot; Binary endpoint only.</b> These calculators assume a single <b>yes/no</b> outcome per patient (the event either happened or it did not). If your outcome is continuous or time-to-event, they do not apply.</div>
+  <label class="setup-ep">Your endpoint name:
+    <input id="endpoint-name" type="text" autocomplete="off"
+           placeholder="e.g. pCR, treatment response, 30-day mortality, recurrence, readmission">
+  </label>
+</div>
+
 <main>
   <div class="tabs" id="tabs">
     <div class="tab active" data-tab="dev" data-stage="dev"><span class="tabno">App 1</span> Development<small>Riley 2020 &middot; is the training set big enough?</small></div>
@@ -33,7 +41,7 @@
       <p class="desc">This is the first question, asked before any validation: was the cohort you used to build the model (here the <b>Discovery cohort, N&nbsp;=&nbsp;648</b>) large enough to fit it reliably, so that the model is not badly overfitted? Enter your cohort size and the app reports what each of Riley's four criteria (B1&ndash;B4) actually achieves at that size. In practice the shrinkage criterion (B3) is almost always the one that decides whether the sample is sufficient. The example below plans for <b>20 candidate predictor parameters</b>.</p>
       <div class="field"><label>N &mdash; development cohort size</label><input type="number" id="dev-n" value="648"></div>
       <div class="row2">
-        <div class="field"><label>&phi; &mdash; event proportion <span class="hint">(here: pCR rate)</span></label><input type="number" step="0.01" id="dev-phi" value="0.31"></div>
+        <div class="field"><label>&phi; &mdash; event proportion <span class="hint">(the <span class="epname">event</span> rate)</span></label><input type="number" step="0.01" id="dev-phi" value="0.31"></div>
         <div class="field"><label>P &mdash; candidate predictor parameters</label><input type="number" id="dev-P" value="20"></div>
       </div>
       <div class="field"><label>R&sup2;<sub>cs</sub> &mdash; anticipated Cox&ndash;Snell R&sup2; <span class="hint">(leave blank for the conservative default, 0.15&times;max)</span></label><input type="number" step="0.001" id="dev-r2" placeholder="auto"></div>
@@ -49,6 +57,7 @@
     <div class="card">
       <h2><span class="appno">App 2</span> Is the validation cohort precise enough? (formula)</h2>
       <p class="desc">Once the model has been built, the next question is whether a new cohort is large enough to measure its performance <b>precisely</b>. For your cohort size, the app reports the width of the 95% confidence interval you would obtain for four measures: the observed/expected ratio, the calibration slope, the c-statistic, and net benefit. A narrower interval means a more precise estimate. This tab uses the fast closed-form formulas, the same approach as the <code class="k">pmvalsampsize</code> software.</p>
+      <p class="mustnote"><b>The c-statistic must come from a real model.</b> Drop your predictions CSV to fill &phi; and c from data, or enter a value measured from your own model or a pilot study. A made-up c gives a meaningless precision estimate &mdash; treat any hand-typed number as a planning &ldquo;what-if&rdquo; only.</p>
       <div class="field"><label>N &mdash; validation cohort size</label><input type="number" id="vc-n" value="331"></div>
       <div class="row2">
         <div class="field"><label>&phi; &mdash; event proportion</label><input type="number" step="0.01" id="vc-phi" value="0.34"></div>
@@ -56,7 +65,7 @@
       </div>
       <button class="run" data-run="vc" disabled>Calculate</button>
       <div class="drop" data-drop="vc-pred">Drop a predictions CSV (<b>predicted_prob</b>, <b>true_outcome</b>) to auto-fill &phi; &amp; c<div class="filemsg"></div></div>
-      <div class="ref">Riley RD et al. (part 3) <i>BMJ</i> 2023;383:e074821. Targets: c&le;0.10, slope&le;0.30, O/E&le;0.22.</div>
+      <div class="ref">Riley RD et al. (part 3) <i>BMJ</i> 2023;383:e074821. Targets (<code class="k">pmvalsampsize</code> defaults): c&le;0.10, slope&le;0.20, O/E&le;0.20.</div>
     </div>
     <div class="card"><div id="out-vc" class="results-empty">Set parameters and click <b>Calculate</b>.</div></div>
   </section>
@@ -66,6 +75,7 @@
     <div class="card">
       <h2><span class="appno">App 3</span> Is the validation cohort precise enough? (simulation)</h2>
       <p class="desc">This answers the same precision question as App&nbsp;2, but by simulating many datasets instead of using a formula, which lets you relax its assumptions. You describe the model's linear predictor as a Normal(&mu;,&nbsp;&sigma;&sup2;) distribution, and you can deliberately build in miscalibration through the true slope S: <b>S&nbsp;=&nbsp;1</b> means the model is perfectly calibrated, while <b>S&nbsp;below&nbsp;1</b> means its predicted risks are too extreme. Running it at S&nbsp;=&nbsp;1 and again at S&nbsp;=&nbsp;0.9 gives a realistic precision range.</p>
+      <p class="mustnote"><b>&mu; and &sigma; must describe a real built model.</b> The linear predictor is <i>your model's score</i> for each patient (the log-odds of its predicted risk). Drop your predictions CSV to fill &mu; and &sigma; from data (the app reads them as the mean/SD of logit(predicted_prob)). Do not invent these numbers &mdash; the result is only meaningful if they reflect a real model; hand-typed values are a planning &ldquo;what-if&rdquo; only.</p>
       <div class="field"><label>N &mdash; validation cohort size</label><input type="number" id="vs-n" value="331"></div>
       <div class="row2">
         <div class="field"><label>&mu; &mdash; mean of LP</label><input type="number" step="0.05" id="vs-mu" value="-0.318"></div>

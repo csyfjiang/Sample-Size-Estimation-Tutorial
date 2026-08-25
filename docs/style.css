@@ -151,3 +151,28 @@ code.k { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; font-
 .panel[data-stage="dev"] button.run { background: var(--dev); }
 .panel[data-stage="val"] button.run { background: var(--val); }
 .panel[data-stage="cmp"] button.run { background: var(--cmp); }
+
+/* "inputs must come from a real model" callout on validation tabs */
+.mustnote {
+  font-size: 12.5px; line-height: 1.5; margin: 0 0 14px;
+  padding: 9px 12px; border-radius: 8px;
+  background: var(--warn-bg); color: var(--warn-ink);
+  border-left: 3px solid var(--warn-ink);
+}
+.mustnote b { color: var(--warn-ink); }
+
+/* Step 0: binary-endpoint check + endpoint name */
+.setup {
+  max-width: 1120px; margin: 0 auto; padding: 12px 22px 0;
+  display: flex; gap: 16px; align-items: center; flex-wrap: wrap;
+}
+.setup-check {
+  flex: 1; min-width: 260px; font-size: 12.5px; line-height: 1.5;
+  padding: 9px 12px; border-radius: 8px;
+  background: var(--code-bg); color: var(--ink); border-left: 3px solid var(--brand);
+}
+.setup-ep { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.setup-ep input {
+  font-weight: 400; padding: 8px 10px; min-width: 240px;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--ink); font-size: 13px;
+}

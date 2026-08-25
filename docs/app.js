@@ -31,7 +31,7 @@ async function boot() {
     setStatus("Loading calculators…");
     pyodide.FS.mkdirTree("/home/pyodide/sampsizeval");
     for (const path of PY_FILES) {
-      const src = await (await fetch(path + "?v=3")).text();
+      const src = await (await fetch(path + "?v=4")).text();
       const dest = "/home/pyodide/" + path.replace(/^py\//, "");
       pyodide.FS.writeFile(dest, src);
     }
@@ -97,8 +97,8 @@ function renderVC(r) {
   const nb = Object.entries(r.net_benefit || {}).map(([t, d]) =>
     [`Net benefit @ p<sub>t</sub>=${t}`, fmt(d.ci_width, 3), "&mdash;", ""]);
   const rows = [
-    ["O/E ratio", fmt(r.oe_ci_width), "&le; 0.22", badge(r.oe_ok, r.oe_ci_width <= 0.35)],
-    ["Calibration slope", fmt(r.calibration_slope_ci_width), "&le; 0.30", badge(r.calibration_slope_ok, r.calibration_slope_ci_width <= 0.5)],
+    ["O/E ratio", fmt(r.oe_ci_width), "&le; 0.20", badge(r.oe_ok, r.oe_ci_width <= 0.30)],
+    ["Calibration slope", fmt(r.calibration_slope_ci_width), "&le; 0.20", badge(r.calibration_slope_ok, r.calibration_slope_ci_width <= 0.35)],
     ["c-statistic", fmt(r.c_stat_ci_width), "&le; 0.10", badge(r.c_stat_ok, r.c_stat_ci_width <= 0.15)],
     ...nb,
   ];
@@ -277,5 +277,19 @@ document.querySelectorAll(".drop").forEach(zone => {
   ["dragleave", "drop"].forEach(ev => zone.addEventListener(ev, e => { e.preventDefault(); zone.classList.remove("hot"); }));
   zone.addEventListener("drop", e => { const f = e.dataTransfer.files[0]; if (f) handle(f); });
 });
+
+/* ---- Step 0: endpoint name -> propagate into labels ---------------------- */
+const epInput = document.getElementById("endpoint-name");
+function setEndpoint(name) {
+  const label = name && name.trim() ? name.trim() : "event";
+  document.querySelectorAll(".epname").forEach(el => (el.textContent = label));
+  try { localStorage.setItem("ssv-endpoint", name || ""); } catch (e) { /* storage blocked */ }
+}
+try {
+  const saved = localStorage.getItem("ssv-endpoint");
+  if (saved) epInput.value = saved;
+} catch (e) { /* storage blocked */ }
+setEndpoint(epInput.value);
+epInput.addEventListener("input", () => setEndpoint(epInput.value));
 
 boot();
