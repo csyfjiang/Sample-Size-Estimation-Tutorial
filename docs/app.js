@@ -278,18 +278,45 @@ document.querySelectorAll(".drop").forEach(zone => {
   zone.addEventListener("drop", e => { const f = e.dataTransfer.files[0]; if (f) handle(f); });
 });
 
-/* ---- Step 0: endpoint name -> propagate into labels ---------------------- */
+/* ---- Step 0: binary-endpoint check + endpoint name (modal) --------------- */
+const epModal = document.getElementById("ep-modal");
 const epInput = document.getElementById("endpoint-name");
+const epSteps = {
+  1: document.getElementById("ep-step1"),
+  2: document.getElementById("ep-step2"),
+  quit: document.getElementById("ep-quit"),
+};
 function setEndpoint(name) {
   const label = name && name.trim() ? name.trim() : "event";
   document.querySelectorAll(".epname").forEach(el => (el.textContent = label));
+}
+function saveEndpoint(name) {
   try { localStorage.setItem("ssv-endpoint", name || ""); } catch (e) { /* storage blocked */ }
 }
-try {
-  const saved = localStorage.getItem("ssv-endpoint");
-  if (saved) epInput.value = saved;
-} catch (e) { /* storage blocked */ }
-setEndpoint(epInput.value);
+function showStep(which) {
+  epSteps[1].hidden = which !== 1;
+  epSteps[2].hidden = which !== 2;
+  epSteps.quit.hidden = which !== "quit";
+}
+function openModal(step) { showStep(step); epModal.style.display = "flex"; }
+function closeModal() { epModal.style.display = "none"; }
+
+document.getElementById("ep-yes").addEventListener("click", () => showStep(2));
+document.getElementById("ep-no").addEventListener("click", () => showStep("quit"));
+document.getElementById("ep-back").addEventListener("click", () => showStep(1));
+document.getElementById("ep-back2").addEventListener("click", () => showStep(1));
+document.getElementById("ep-continue").addEventListener("click", () => {
+  const name = epInput.value.trim() || "event";
+  setEndpoint(name); saveEndpoint(name); closeModal();
+});
+epInput.addEventListener("keydown", e => { if (e.key === "Enter") document.getElementById("ep-continue").click(); });
 epInput.addEventListener("input", () => setEndpoint(epInput.value));
+document.getElementById("ep-change").addEventListener("click", e => { e.preventDefault(); openModal(1); });
+
+// On load: skip the modal only if the user already confirmed a binary endpoint
+let savedEp = "";
+try { savedEp = localStorage.getItem("ssv-endpoint") || ""; } catch (e) { /* storage blocked */ }
+if (savedEp) { epInput.value = savedEp; setEndpoint(savedEp); closeModal(); }
+else { setEndpoint("event"); openModal(1); }
 
 boot();

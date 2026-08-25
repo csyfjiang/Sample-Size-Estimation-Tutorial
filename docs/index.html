@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sample Size Estimation for Prediction Models</title>
 <meta name="description" content="Interactive sample-size / precision calculators for clinical prediction models with a binary outcome. Runs entirely in your browser.">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 <header>
@@ -19,11 +19,8 @@
 </header>
 
 <div class="setup">
-  <div class="setup-check"><b>Step 0 &middot; Binary endpoint only.</b> These calculators assume a single <b>yes/no</b> outcome per patient (the event either happened or it did not). If your outcome is continuous or time-to-event, they do not apply.</div>
-  <label class="setup-ep">Your endpoint name:
-    <input id="endpoint-name" type="text" autocomplete="off"
-           placeholder="e.g. pCR, treatment response, 30-day mortality, recurrence, readmission">
-  </label>
+  <span class="setup-check"><b>Endpoint:</b> <b class="epname" id="ep-readout">event</b>
+    <a href="#" id="ep-change">change</a> &nbsp;&middot;&nbsp; a single binary (yes/no) outcome per patient.</span>
 </div>
 
 <main>
@@ -125,7 +122,38 @@
   Educational tool. Confirm manuscript numbers with <code class="k">pmsampsize</code> / <code class="k">pmvalsampsize</code>.
 </footer>
 
+<div class="modal-overlay" id="ep-modal">
+  <div class="modal-card">
+    <div id="ep-step1">
+      <h3>Before you start</h3>
+      <p>These calculators are for a <b>binary endpoint</b> &mdash; a single <b>yes/no</b> outcome per patient (the event either happened or it did not). They do <b>not</b> apply to continuous or time-to-event (survival) outcomes.</p>
+      <p class="ask"><b>Is your outcome a binary (yes/no) endpoint?</b></p>
+      <div class="modal-btns">
+        <button class="mbtn ghost" id="ep-no" type="button">No</button>
+        <button class="mbtn primary" id="ep-yes" type="button">Yes, it's binary</button>
+      </div>
+    </div>
+    <div id="ep-step2" hidden>
+      <h3>Name your endpoint</h3>
+      <p>What is your yes/no outcome called? It labels the inputs throughout (the &phi; / &gamma; fields).</p>
+      <input id="endpoint-name" type="text" autocomplete="off"
+             placeholder="e.g. pCR, treatment response, 30-day mortality, recurrence, readmission">
+      <div class="modal-btns">
+        <button class="mbtn ghost" id="ep-back2" type="button">Back</button>
+        <button class="mbtn primary" id="ep-continue" type="button">Continue</button>
+      </div>
+    </div>
+    <div id="ep-quit" hidden>
+      <h3>This tool doesn't fit your outcome</h3>
+      <p>These sample-size methods are valid only for a <b>binary (yes/no)</b> outcome. For a <b>continuous</b> outcome or a <b>time-to-event</b> (survival) outcome, use the matching methods instead (e.g.\ the continuous- and survival-outcome papers by Riley et al.).</p>
+      <div class="modal-btns">
+        <button class="mbtn ghost" id="ep-back" type="button">Back</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
-<script src="app.js"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>
