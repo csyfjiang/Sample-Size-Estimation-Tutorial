@@ -60,7 +60,7 @@
       <p class="mustnote"><b>The c-statistic must come from a real model.</b> Drop your predictions CSV to fill &phi; and c from data, or enter a value measured from your own model or a pilot study. A made-up c gives a meaningless precision estimate &mdash; treat any hand-typed number as a planning &ldquo;what-if&rdquo; only.</p>
       <div class="field"><label>N &mdash; validation cohort size</label><input type="number" id="vc-n" value="331"></div>
       <div class="row2">
-        <div class="field"><label>&phi; &mdash; event proportion</label><input type="number" step="0.01" id="vc-phi" value="0.34"></div>
+        <div class="field"><label>&phi; &mdash; event proportion <span class="hint">(the <span class="epname">event</span> rate)</span></label><input type="number" step="0.01" id="vc-phi" value="0.34"></div>
         <div class="field"><label>c-statistic <span class="hint">(AUC)</span></label><input type="number" step="0.01" id="vc-c" value="0.75"></div>
       </div>
       <button class="run" data-run="vc" disabled>Calculate</button>
@@ -104,7 +104,7 @@
       </div>
       <div class="row2">
         <div class="field"><label>&rho; &mdash; score correlation</label><input type="number" step="0.05" id="cmp-rho" value="0.4"></div>
-        <div class="field"><label>&gamma; &mdash; event proportion</label><input type="number" step="0.01" id="cmp-gamma" value="0.34"></div>
+        <div class="field"><label>&gamma; &mdash; event proportion <span class="hint">(the <span class="epname">event</span> rate)</span></label><input type="number" step="0.01" id="cmp-gamma" value="0.34"></div>
       </div>
       <div class="row2">
         <div class="field"><label>N <span class="hint">(your cohort, for power)</span></label><input type="number" id="cmp-n" value="331"></div>
